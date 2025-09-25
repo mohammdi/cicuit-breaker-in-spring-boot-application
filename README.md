@@ -128,6 +128,56 @@ Types:
 
 ---
 
+### Actuator & Circuit Breaker Metrics
+
+Enable exposure (already partially configured):
+```yaml
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+```
+
+Logging for CB transitions (optional):
+```yaml
+logging:
+  level:
+    io.github.resilience4j.circuitbreaker: INFO
+    io.github.resilience4j.circuitbreaker.internal: INFO
+```
+
+Useful curl commands (replace PORT with your app port, e.g., 8080 or 8085):
+```bash
+# Health
+curl -s http://localhost:PORT/actuator/health | jq
+curl -s http://localhost:PORT/actuator/health/liveness | jq
+curl -s http://localhost:PORT/actuator/health/readiness | jq
+
+# Info
+curl -s http://localhost:PORT/actuator/info | jq
+
+# List all metrics
+curl -s http://localhost:PORT/actuator/metrics | jq
+
+# Circuit Breaker state (all)
+curl -s "http://localhost:PORT/actuator/metrics/resilience4j.circuitbreaker.state" | jq
+
+# Circuit Breaker state (payment only)
+curl -s "http://localhost:PORT/actuator/metrics/resilience4j.circuitbreaker.state?tag=name:payment" | jq
+
+# CB calls (all)
+curl -s "http://localhost:PORT/actuator/metrics/resilience4j.circuitbreaker.calls" | jq
+
+# CB calls (payment, failures)
+curl -s "http://localhost:PORT/actuator/metrics/resilience4j.circuitbreaker.calls?tag=name:payment&tag=outcome:failure" | jq
+
+# CB calls (payment, success)
+curl -s "http://localhost:PORT/actuator/metrics/resilience4j.circuitbreaker.calls?tag=name:payment&tag=outcome:success" | jq
+```
+
+---
+
 ### Customize
 
 - Change payment base URL in `PaymentClient` if needed (e.g., from env or config property).
