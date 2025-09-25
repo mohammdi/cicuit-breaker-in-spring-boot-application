@@ -26,10 +26,12 @@ public class OrderService {
     public Order submit(String customerEmail, BigDecimal amount) {
         Order order = new Order(null, customerEmail, amount, OrderStatus.PENDING, null);
 
-        boolean authorized = paymentClient.authorize(customerEmail, amount)
-                .onErrorReturn(false)
-                .blockOptional()
-                .orElse(false);
+        boolean authorized;
+        try {
+            authorized = paymentClient.authorize(customerEmail, amount);
+        } catch (Exception ex) {
+            authorized = false;
+        }
         if (!authorized) {
             order.markFailed();
             throw new RuntimeException("Payment authorization failed");

@@ -10,7 +10,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 
@@ -31,7 +30,7 @@ class OrderServiceTest {
 
     @Test
     void submit_persists_when_payment_authorized() {
-        when(paymentClient.authorize(anyString(), any())).thenReturn(Mono.just(true));
+        when(paymentClient.authorize(anyString(), any())).thenReturn(true);
         ArgumentCaptor<Order> orderCaptor = ArgumentCaptor.forClass(Order.class);
         when(orderRepository.save(orderCaptor.capture())).thenAnswer(inv -> inv.getArgument(0));
 
@@ -44,7 +43,7 @@ class OrderServiceTest {
 
     @Test
     void submit_throws_when_payment_fails() {
-        when(paymentClient.authorize(anyString(), any())).thenReturn(Mono.just(false));
+        when(paymentClient.authorize(anyString(), any())).thenReturn(false);
 
         RuntimeException ex = assertThrows(RuntimeException.class, () ->
                 orderService.submit("user@example.com", new BigDecimal("10.00"))
