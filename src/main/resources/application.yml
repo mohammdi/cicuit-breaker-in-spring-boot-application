@@ -20,7 +20,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,metrics
 
 resilience4j:
   circuitbreaker:
@@ -33,7 +33,14 @@ resilience4j:
         waitDurationInOpenState: 10s
         permittedNumberOfCallsInHalfOpenState: 3
         automaticTransitionFromOpenToHalfOpenEnabled: true
+    metrics:
+      enabled: true
 
 server:
   port: 8085
+
+logging:
+  level:
+    io.github.resilience4j.circuitbreaker: INFO
+    io.github.resilience4j.circuitbreaker.internal: INFO
 
